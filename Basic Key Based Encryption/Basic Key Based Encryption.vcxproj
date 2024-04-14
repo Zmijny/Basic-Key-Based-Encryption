@@ -127,9 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Main\KeyManagment.cpp" />
     <ClCompile Include="Main\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Main\KeyManagment.h" />
     <ClInclude Include="Main\Main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
