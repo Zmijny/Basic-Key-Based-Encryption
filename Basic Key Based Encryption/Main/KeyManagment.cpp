@@ -1,5 +1,5 @@
 #include "KeyManagment.h"
-#define EE_DEBUG 1
+#define EE_DEBUG 0
 
 void KeyManagment::ReadKey()
 {

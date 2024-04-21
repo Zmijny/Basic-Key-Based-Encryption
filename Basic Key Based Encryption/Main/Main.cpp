@@ -1,6 +1,8 @@
 #include "Main.h"
 #define EE_DEBUG 1
 
+
+
 void Main::Encrypt(std::string text)
 {
 	std::vector<int> text_encrypted;
@@ -9,10 +11,8 @@ void Main::Encrypt(std::string text)
 	int j = 0;
 	for (int i = 0; i <= text.length();i++)
 	{
-		text_encrypted.push_back((static_cast<int>(text[i]) + ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) + 100);
-		int a = static_cast<int>(_key->key[j]);
-		int b = _key->shift;
-		int c = (static_cast<int>(_key->key[j]) - _key->shift) / 2;
+		text_encrypted.push_back((static_cast<int>(text[i]) + ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) + (static_cast<int>(_key->key[j]) * MULTIPLIER));
+
 		if (j != 31)
 			j++;
 		else
@@ -40,48 +40,41 @@ void Main::Decrypt(std::string text)
 {
 	int character[3];
 	std::vector<char> text_decrypted;
+	std::string encrypted_text;
 	ReadKey();
-	/*
-	std::string tst;
 	input.open("output_file.txt");
-	while(std::getline(input, tst)){}
+	input >> encrypted_text;
 	input.close();
-	*/
+
 	int j = 0;
-	int k = 0;
-	for (int i = 0; i <= (text.length() / 3); i++)
+	for (int i = 0; i < encrypted_text.length(); i++)
 	{
-		character[k] = (static_cast<int>(text[i]) - 100 - ((static_cast<int>(_key->key[j]) - _key->shift) / 2) );
+		if (i == encrypted_text.length() - 1)
+			break;
+
+		character[0] = static_cast<int>(encrypted_text[i]) - NUMBERS_AS_TEXT_ERROR;
+		character[1] = static_cast<int>(encrypted_text[i + 1]) - NUMBERS_AS_TEXT_ERROR;
+		character[2] = static_cast<int>(encrypted_text[i + 2]) - NUMBERS_AS_TEXT_ERROR;
+		i += 2;
+
+		int dummy = character[0] * 100 + character[1] * 10 + character[2];
+
+		text_decrypted.push_back(static_cast<char>(dummy - ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) - ((static_cast<int>(_key->key[j]) * MULTIPLIER)));
+
 		if (j != 31)
 			j++;
 		else
 			j = 0;
-
-		if (k < 2)
-			k++;
-		else
-		{
-			text_decrypted.push_back(static_cast<char>((character[0] * 100) + (character[1] * 10) + character[2]));
-			k = 0;
-		}
-			
 	}
+	
 
-	/*
-	output.open("output_file.txt");
-	for(int i = 0; i <= text_decrypted.size(); i++)
-	{
-		output << text_decrypted[i];
-	}
-	output.close();
-	*/
 	//Debug
 #if EE_DEBUG == 1
-	printf("\n\nEncrypted text: %s", text.c_str());
+	printf("\n\nEncrypted text: %s", encrypted_text.c_str());
 	printf("\nDecrypted text: ");
 	for (auto n : text_decrypted)
 	{
-		printf("%s ", n);
+		printf("%c", n);
 	}
 #endif
 }
@@ -97,7 +90,7 @@ int main(int* argc, char* argv[])
 	//k3y.GenerateKey();
 	//k3y.SaveKey();
 
-	std::string test_text = "Hello World";
+	std::string test_text = "I'm sure that your're never gonna be able to read it!";
 
 	_main.Decrypt(test_text);
 }
