@@ -1,96 +1,100 @@
-#include "Main.h"
-#define EE_DEBUG 1
+#include <iostream>
+#include <fstream>
+#include <conio.h>
+#include "Encryption.h"
 
+void WaitForUserInput();
 
-
-void Main::Encrypt(std::string text)
-{
-	std::vector<int> text_encrypted;
-	ReadKey();
-	
-	int j = 0;
-	for (int i = 0; i <= text.length();i++)
-	{
-		text_encrypted.push_back((static_cast<int>(text[i]) + ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) + (static_cast<int>(_key->key[j]) * MULTIPLIER));
-
-		if (j != 31)
-			j++;
-		else
-			j = 0;
-	}
-
-	output.open("output_file.txt");
-	for (int i = 0; i < text_encrypted.size(); i++)
-	{
-		output << text_encrypted[i];
-	}
-	output.close();
-	//Debug
-#if EE_DEBUG == 1
-	printf("\n\n\nNormal text: %s", text.c_str());
-	std::cout << "\nEncrypted text: ";
-	for (auto n : text_encrypted)
-	{
-		printf("%d ", n);
-	}
-#endif
-}
-
-void Main::Decrypt(std::string text)
-{
-	int character[3];
-	std::vector<char> text_decrypted;
-	std::string encrypted_text;
-	ReadKey();
-	input.open("output_file.txt");
-	input >> encrypted_text;
-	input.close();
-
-	int j = 0;
-	for (int i = 0; i < encrypted_text.length(); i++)
-	{
-		if (i == encrypted_text.length() - 1)
-			break;
-
-		character[0] = static_cast<int>(encrypted_text[i]) - NUMBERS_AS_TEXT_ERROR;
-		character[1] = static_cast<int>(encrypted_text[i + 1]) - NUMBERS_AS_TEXT_ERROR;
-		character[2] = static_cast<int>(encrypted_text[i + 2]) - NUMBERS_AS_TEXT_ERROR;
-		i += 2;
-
-		int dummy = character[0] * 100 + character[1] * 10 + character[2];
-
-		text_decrypted.push_back(static_cast<char>(dummy - ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) - ((static_cast<int>(_key->key[j]) * MULTIPLIER)));
-
-		if (j != 31)
-			j++;
-		else
-			j = 0;
-	}
-	
-
-	//Debug
-#if EE_DEBUG == 1
-	printf("\n\nEncrypted text: %s", encrypted_text.c_str());
-	printf("\nDecrypted text: ");
-	for (auto n : text_decrypted)
-	{
-		printf("%c", n);
-	}
-#endif
-}
-
-
-// Main
 int main(int* argc, char* argv[])
 {
-	Main _main;
-	KeyManagment k3y;
-	//std::string file_opened = argv[1];
+	Encryption _encryption;
+	KeyManagment encrytpion_key;
+	int user_input;
 
-	//k3y.GenerateKey();
-	//k3y.SaveKey();
+	if (argv[1] != nullptr)
+	{
+		std::string file_opened = argv[1];
+		std::fstream file_selected(file_opened);
+		if (!file_selected.is_open())
+		{
+			printf("\nCouldn't open the desired file");
+		}
 
-	std::string test_text = "I'm sure that your're never gonna be able to read it!";
+		while (true)
+		{
+			printf("\nWhat do you want to do with the file?\nEncrypt - 1\nDecrypt - 2\nGenerate New Encryption Key - 3\nOption: ");
+			std::cin >> user_input;
+			switch (user_input)
+			{
+			case 1:
+				_encryption.Encrypt(file_opened, _encryption.File);
+				printf("File Encrypted");
+				WaitForUserInput();
+				return 0;
+			case 2:
+				_encryption.Decrypt(file_opened, _encryption.File);
+				printf("File Decrypted");		
+				WaitForUserInput();
+				return 0;
+			case 3:
+				encrytpion_key.GenerateKey();
+				encrytpion_key.SaveKey();
+				printf("Generated and saved the new Encryption key");
+				WaitForUserInput();
+				break;
+			default:
+				printf("\nPlease choose a number from 1 to 3 to select your option");
+				WaitForUserInput();
+				system("cls");
+				break;
+			}
+		}
+		file_selected.close();
+	}
+	else
+	{
+		std::string input_string;
+		
+		printf("\nPlease input a string you wish to encrypt/decrypt\n");
+		getline(std::cin, input_string);
+		system("cls");
 
-	_main.Decrypt(test_text);
+		while (true)
+		{
+			printf("\nEncrypt - 1\nDecrypt - 2\nGenerate New Encryption Key - 3\nOption: ");
+			std::cin >> user_input;
+			switch (user_input)
+			{
+			case 1:
+				_encryption.Encrypt(input_string, _encryption.Plain_Text);
+				printf("Text Encrypted");
+				WaitForUserInput();
+				return 0;
+			case 2:
+				_encryption.Decrypt(input_string, _encryption.Plain_Text);
+				printf("Text Decrypted");
+				WaitForUserInput();
+				return 0;
+			case 3:
+				encrytpion_key.GenerateKey();
+				encrytpion_key.SaveKey();
+				printf("Generated and saved the new Encryption key");
+				break;
+			default:
+				printf("\nPlease choose a number from 1 to 3 to select your option");
+				WaitForUserInput();
+				system("cls");
+				break;
+			}
+		}
+	}
+	
+	WaitForUserInput();
+	return 0;
+}
+
+void WaitForUserInput()
+{
+	printf("\nPress a key to continue...");
+	_getch();
 }

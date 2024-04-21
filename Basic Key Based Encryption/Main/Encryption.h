@@ -6,11 +6,17 @@
 #define NUMBERS_AS_TEXT_ERROR 48
 #define MULTIPLIER 6
 
-class Main : KeyManagment
+#define EE_DEBUG 0
+
+class Encryption : KeyManagment
 {
 	ifstream input;
 	ofstream output;
 public:
-	void Encrypt(std::string text);
-	void Decrypt(std::string text);
+	enum {
+		Plain_Text = 0,
+		File
+	};
+	void Encrypt(std::string data, int type);
+	void Decrypt(std::string data, int type);
 };

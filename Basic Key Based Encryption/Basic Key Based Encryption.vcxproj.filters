@@ -21,12 +21,15 @@
     <ClCompile Include="Main\KeyManagment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Main\Encryption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Main\Main.h">
+    <ClInclude Include="Main\KeyManagment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Main\KeyManagment.h">
+    <ClInclude Include="Main\Encryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
