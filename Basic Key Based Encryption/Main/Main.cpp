@@ -7,12 +7,18 @@ void WaitForUserInput();
 
 int main(int* argc, char* argv[])
 {
+	printf("Where the program was executed: %s", argv[0]);
+
 	Encryption _encryption;
 	KeyManagment encrytpion_key;
+	//encrytpion_key.ReadKey(argv[0]);
 	int user_input;
 
 	if (argv[1] != nullptr)
 	{
+		
+		printf("\nOpened File Path: %s", argv[1]);
+
 		std::string file_opened = argv[1];
 		std::fstream file_selected(file_opened);
 		if (!file_selected.is_open())
@@ -27,18 +33,18 @@ int main(int* argc, char* argv[])
 			switch (user_input)
 			{
 			case 1:
-				_encryption.Encrypt(file_opened, _encryption.File);
+				_encryption.Encrypt(file_opened, _encryption.File, argv[0]);
 				printf("File Encrypted");
 				WaitForUserInput();
 				return 0;
 			case 2:
-				_encryption.Decrypt(file_opened, _encryption.File);
+				_encryption.Decrypt(file_opened, _encryption.File, argv[0]);
 				printf("File Decrypted");		
 				WaitForUserInput();
 				return 0;
 			case 3:
 				encrytpion_key.GenerateKey();
-				encrytpion_key.SaveKey();
+				encrytpion_key.SaveKey(argv[0]);
 				printf("Generated and saved the new Encryption key");
 				WaitForUserInput();
 				break;
@@ -66,18 +72,18 @@ int main(int* argc, char* argv[])
 			switch (user_input)
 			{
 			case 1:
-				_encryption.Encrypt(input_string, _encryption.Plain_Text);
+				_encryption.Encrypt(input_string, _encryption.Plain_Text, argv[0]);
 				printf("Text Encrypted");
 				WaitForUserInput();
 				return 0;
 			case 2:
-				_encryption.Decrypt(input_string, _encryption.Plain_Text);
+				_encryption.Decrypt(input_string, _encryption.Plain_Text, argv[0]);
 				printf("Text Decrypted");
 				WaitForUserInput();
 				return 0;
 			case 3:
 				encrytpion_key.GenerateKey();
-				encrytpion_key.SaveKey();
+				encrytpion_key.SaveKey(argv[0]);
 				printf("Generated and saved the new Encryption key");
 				break;
 			default:

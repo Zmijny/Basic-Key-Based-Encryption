@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <vector>
+#include <string>
 #define KEY_FILENAME "key.bin"
 using std::ofstream;
 using std::ifstream;
@@ -19,7 +21,7 @@ private:
 protected:
 	KeyData* _key = new KeyData;
 public:
-	void ReadKey();
-	void SaveKey();
+	void ReadKey(char* path);
+	void SaveKey(char* path);
 	void GenerateKey();
 };

@@ -1,9 +1,9 @@
 #include "Encryption.h"
 
-void Encryption::Encrypt(std::string data, int type)
+void Encryption::Encrypt(std::string data, int type, char* path)
 {
 	std::vector<int> text_encrypted;
-	ReadKey();
+	ReadKey(path);
 
 	if (type == Plain_Text)
 	{
@@ -60,7 +60,14 @@ void Encryption::Encrypt(std::string data, int type)
 		// Read the data of the file
 		file_read.open(data);
 		while (getline(file_read, dummy))
+#if EE_DEBUG == 1
+		{
 			file_contains.push_back(dummy);
+			printf("\nDummy: %s", dummy.c_str());
+		}
+#else
+			file_contains.push_back(dummy);
+#endif
 		file_read.close();
 
 		// Encrypt the contains of the file and save it to the output file
@@ -70,12 +77,24 @@ void Encryption::Encrypt(std::string data, int type)
 			j = 0;
 			for (int k = 0; k <= file_contains[i].length(); k++)
 			{
-				output << ((static_cast<int>(file_contains[i][k]) + ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) + (static_cast<int>(_key->key[j]) * MULTIPLIER));
+				if (file_contains[i][k] != '\0')
+				{
+#if EE_DEBUG == 1
+					int dummy_int = ((static_cast<int>(file_contains[i][k]) + (static_cast<int>(_key->key[j]) - _key->shift) / 2) + (static_cast<int>(_key->key[j]) * MULTIPLIER));
+					printf("\n\n\tNEW INT\nDummy int: %d", dummy_int);
+					printf("\nKey Value with shift and halfed: %d", (static_cast<int>(_key->key[j]) - _key->shift) / 2);
+					printf("\nBase key value: %d", static_cast<int>(_key->key[j]));
+					printf("\nFile contains character Value: %d", static_cast<int>(file_contains[i][k]));
+					printf("\nKey shift Value: %d", _key->shift);
+					printf("\nKey Value: %d", (int)_key->key[j]);
+#endif
+					output << ((static_cast<int>(file_contains[i][k]) + (static_cast<int>(_key->key[j]) - _key->shift) / 2) + (static_cast<int>(_key->key[j]) * MULTIPLIER));
 
-				if (j != 31)
-					j++;
-				else
-					j = 0;
+					if (j != 31)
+						j++;
+					else
+						j = 0;
+				}
 			}
 			output << '\n';
 		}
@@ -97,11 +116,11 @@ void Encryption::Encrypt(std::string data, int type)
 #endif
 }
 
-void Encryption::Decrypt(std::string data, int type)
+void Encryption::Decrypt(std::string data, int type, char* path)
 {
 	int character[3];
 	std::vector<char> text_decrypted;
-	ReadKey();
+	ReadKey(path);
 
 	if (type == Plain_Text)
 	{
@@ -112,14 +131,24 @@ void Encryption::Decrypt(std::string data, int type)
 			if (i == data.length() - 1)
 				break;
 
-			character[0] = static_cast<int>(data[i]) - NUMBERS_AS_TEXT_ERROR;
+			character[0] = static_cast<int>(data[i])     - NUMBERS_AS_TEXT_ERROR;
 			character[1] = static_cast<int>(data[i + 1]) - NUMBERS_AS_TEXT_ERROR;
 			character[2] = static_cast<int>(data[i + 2]) - NUMBERS_AS_TEXT_ERROR;
+			// DEBUG
+#if EE_DEBUG == 1
+			printf("\n\nCharacter 0: %d\nCharacter 1: %d\nCharacter 2: %d",
+				static_cast<int>(data[i]) - NUMBERS_AS_TEXT_ERROR,
+				static_cast<int>(data[i + 1]) - NUMBERS_AS_TEXT_ERROR,
+				static_cast<int>(data[i + 2]) - NUMBERS_AS_TEXT_ERROR);
+#endif
 			i += 2;
 
 			int dummy = character[0] * 100 + character[1] * 10 + character[2];
 			char dummy_char = (static_cast<char>(dummy - ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) - ((static_cast<int>(_key->key[j]) * MULTIPLIER)));
 			output << dummy_char;
+#if EE_DEBUG == 1
+			printf("\n\nDummy char: %c", dummy_char);
+#endif
 
 			if (j != 31)
 				j++;
@@ -164,7 +193,15 @@ void Encryption::Decrypt(std::string data, int type)
 		// Read the data of the file
 		file_read.open(data);
 		while (getline(file_read, dummy))
+#if EE_DEBUG == 1
+		{
 			file_contains.push_back(dummy);
+			printf("\nDummy: %s", dummy.c_str());
+		}
+#else
+			file_contains.push_back(dummy);
+#endif
+			
 		file_read.close();
 
 		// Encrypt the contains of the file and save it to the output file
@@ -174,36 +211,38 @@ void Encryption::Decrypt(std::string data, int type)
 			j = 0;
 			for (int k = 0; k < file_contains[i].length(); k++)
 			{
-				if (k == file_contains[i].length() - 1)
-					break;
+				if (file_contains[i][k] != '\0')
+				{
+					if (k == file_contains[i].length() - 1)
+						break;
 
-				character[0] = static_cast<int>(file_contains[i][k]) - NUMBERS_AS_TEXT_ERROR;
-				character[1] = static_cast<int>(file_contains[i][k + 1]) - NUMBERS_AS_TEXT_ERROR;
-				character[2] = static_cast<int>(file_contains[i][k + 2]) - NUMBERS_AS_TEXT_ERROR;
-				k += 2;
+					character[0] = static_cast<int>(file_contains[i][k]) - NUMBERS_AS_TEXT_ERROR;
+					character[1] = static_cast<int>(file_contains[i][k + 1]) - NUMBERS_AS_TEXT_ERROR;
+					character[2] = static_cast<int>(file_contains[i][k + 2]) - NUMBERS_AS_TEXT_ERROR;
+#if EE_DEBUG == 1
+					printf("\n\n\n\tNEW CHAR\\/\nCharacter 0: %d\nCharacter 1: %d\nCharacter 2: %d",
+						static_cast<int>(data[i]) - NUMBERS_AS_TEXT_ERROR,
+						static_cast<int>(data[i + 1]) - NUMBERS_AS_TEXT_ERROR,
+						static_cast<int>(data[i + 2]) - NUMBERS_AS_TEXT_ERROR);
+#endif
+					k += 2;
 
-				int dummy_int = character[0] * 100 + character[1] * 10 + character[2];
-				char dummy_char = (static_cast<char>(dummy_int - ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) - ((static_cast<int>(_key->key[j]) * MULTIPLIER)));
-				output << dummy_char;
+					int dummy_int = character[0] * 100 + character[1] * 10 + character[2];
 
-				if (j != 31)
-					j++;
-				else
-					j = 0;
+					char dummy_char = (static_cast<char>(dummy_int - ((static_cast<int>(_key->key[j]) - _key->shift) / 2)) - ((static_cast<int>(_key->key[j]) * MULTIPLIER)));
+					output << dummy_char;
+#if EE_DEBUG == 1
+					printf("\n\nDummy int: %d\nDummy char: %c", dummy_int, dummy_char);
+#endif
+
+					if (j != 31)
+						j++;
+					else
+						j = 0;
+				}
 			}
 			output << '\n';
 		}
 		output.close();
 	}
-
-
-	//Debug
-#if EE_DEBUG == 1
-	printf("\n\nEncrypted text: %s", encrypted_text.c_str());
-	printf("\nDecrypted text: ");
-	for (auto n : text_decrypted)
-	{
-		printf("%c", n);
-	}
-#endif
 }

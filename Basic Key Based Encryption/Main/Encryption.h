@@ -17,6 +17,6 @@ public:
 		Plain_Text = 0,
 		File
 	};
-	void Encrypt(std::string data, int type);
-	void Decrypt(std::string data, int type);
+	void Encrypt(std::string data, int type, char* path);
+	void Decrypt(std::string data, int type, char* path);
 };
